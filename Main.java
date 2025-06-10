@@ -12,21 +12,30 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== 스파크 런(Sparklearn)에 오신 걸 환영합니다! ===");
 
+        showStartScreen();
+
         login();
 
         String mode = selectQuizMode();
         String subject = selectSubject();
         String difficulty = selectDifficulty();
 
-        int score = startQuiz(subject, difficulty);
+        int numberOfQuestions = selectNumberOfQuestions();
 
-        showResult(score);
+        int score = startQuiz(subject, difficulty, numberOfQuestions);
+
+        showResult(score, numberOfQuestions);
 
         showRanking();
 
         giveReward(score);
 
         System.out.println("플랫폼 이용해 주셔서 감사합니다!");
+    }
+
+    private static void showStartScreen() {
+        System.out.println("시작하려면 Enter 키를 눌러주세요!");
+        scanner.nextLine();
     }
 
     private static void login() {
@@ -69,12 +78,19 @@ public class Main {
         }
     }
 
-    private static int startQuiz(String subject, String difficulty) {
-        System.out.println(subject + " (" + difficulty + ") 퀴즈를 시작합니다!");
+    private static int selectNumberOfQuestions() {
+        System.out.println("풀 문제 수를 선택하세요: 1) 5문제  2) 10문제");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+        return (choice == 1) ? 5 : 10;
+    }
 
-        int numberOfQuestions = 5; // 기본값
+    private static int startQuiz(String subject, String difficulty, int numberOfQuestions) {
+        System.out.println(subject + " (" + difficulty + ") 퀴즈를 시작합니다! (" + numberOfQuestions + "문제)");
 
         int score = 0;
+        int correctCount = 0;
+        int wrongCount = 0;
 
         for (int i = 1; i <= numberOfQuestions; i++) {
             System.out.println(i + "번 문제: (임시 문제)");
@@ -87,16 +103,25 @@ public class Main {
             if (answer == 1) {  // 임시 정답은 1번으로 고정
                 System.out.println("정답!");
                 score += 10;
+                correctCount++;
             } else {
                 System.out.println("오답!");
+                wrongCount++;
             }
         }
+
+        // 정답/오답 개수도 결과 화면에 출력할 수 있도록 리턴값으로는 점수만 반환
+        // 정답/오답 개수는 showResult에서 출력
+        // showResult 호출 시 correctCount, wrongCount도 같이 넘기면 좋지만 현재 구조는 점수만 넘기는 구조 유지
+
+        // 정답/오답 개수는 임시로 static 변수 없이 여기 출력해보기 (나중에 개선 가능)
+        System.out.println("정답 수: " + correctCount + "개, 오답 수: " + wrongCount + "개");
 
         return score;
     }
 
-    private static void showResult(int score) {
-        System.out.println("퀴즈 종료! 점수: " + score);
+    private static void showResult(int score, int numberOfQuestions) {
+        System.out.println("퀴즈 종료! 점수: " + score + " / " + (numberOfQuestions * 10));
     }
 
     private static void showRanking() {
@@ -110,3 +135,4 @@ public class Main {
         System.out.println(earnedPoints + " 포인트를 획득하였습니다! 현재 보유 포인트: " + points);
     }
 }
+
