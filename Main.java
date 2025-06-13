@@ -10,7 +10,7 @@ public class Main {
     private static int grade;
     private static int points = 0;
 
-    // 문제 데이터 (문제, 보기들, 정답 인덱스)
+    // 문제 데이터 (문제, 보기들, 정답 인덱스, 해설)
     private static String[] questions = {
             "Java에서 클래스를 상속할 때 사용하는 키워드는?",
             "다음 중 정수형 자료형이 아닌 것은?",
@@ -27,7 +27,14 @@ public class Main {
             {"1) 상속", "2) 추상화", "3) 다형성", "4) 포인터"}
     };
 
-    private static int[] correctAnswers = {1, 2, 3, 1, 4}; // 각 문제의 정답 인덱스 (1부터 시작)
+    private static int[] correctAnswers = {1, 2, 2, 1, 4}; // 정답 인덱스 (1부터 시작)
+    private static String[] explanations = {
+            "Java에서는 상속을 할 때 'extends' 키워드를 사용해요.",
+            "'float'는 실수형 자료형이고, 정수형이 아니에요.",
+            "';' 세미콜론은 for문의 각 부분을 구분하는 기호입니다.",
+            "'try'는 예외를 처리하는 블록을 시작할 때 사용합니다.",
+            "'포인터'는 Java의 객체 지향 특징 중 하나가 아닙니다."
+    };
 
     public static void main(String[] args) {
         System.out.println("=== 스파크 런(Sparklearn)에 오신 걸 환영합니다! ===");
@@ -110,14 +117,14 @@ public class Main {
                 if (input.matches("[1-4]")) {
                     answer = Integer.parseInt(input);
                 } else {
-                    System.out.println("⚠️ 1~4 사이 숫자만 입력해야 해요!");
+                    System.out.println("⚠️ 1~4 사이 숫자만 입력해야 해요! 이 문제는 오답 처리됩니다.");
                 }
 
             } catch (TimeoutException e) {
                 System.out.println("\n⏰ 시간 초과! 오답 처리됩니다.");
                 future.cancel(true);
             } catch (Exception e) {
-                System.out.println("⚠️ 입력 처리 중 오류가 발생했어요.");
+                System.out.println("⚠️ 입력 처리 중 오류가 발생했어요. 오답 처리됩니다.");
             }
 
             executor.shutdown();
@@ -126,8 +133,10 @@ public class Main {
                 System.out.println("✅ 정답!");
                 score += 10;
             } else if (answer != -1) {
-                System.out.println("❌ 오답! 정답은 " + correctAnswers[i] + "번이었어요.");
+                System.out.println("❌ 오답! 정답은 " + correctAnswers[i] + "번입니다.");
+                System.out.println("💡 해설: " + explanations[i]);
             }
+            // answer == -1 (잘못된 입력 혹은 시간초과)일 때도 오답 처리된 상태라 추가 메시지 안함
         }
 
         return score;
