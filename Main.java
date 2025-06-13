@@ -4,36 +4,63 @@ import java.util.concurrent.*;
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
-    // 사용자 정보 변수
     private static String nickname;
     private static String major;
     private static int grade;
     private static int points = 0;
 
-    // 문제 데이터 (문제, 보기들, 정답 인덱스, 해설)
-    private static String[] questions = {
+    // 쉬움 문제
+    private static String[] easyQuestions = {
             "Java에서 클래스를 상속할 때 사용하는 키워드는?",
             "다음 중 정수형 자료형이 아닌 것은?",
-            "for문에서 초기화, 조건식, 증감식을 구분하는 기호는?",
-            "다음 중 Java에서 예외(Exception)를 처리하는 데 사용하는 키워드는?",
-            "객체 지향 프로그래밍(OOP)의 4가지 특징이 아닌 것은?"
+            "for문에서 초기화, 조건식, 증감식을 구분하는 기호는?"
     };
-
-    private static String[][] choices = {
+    private static String[][] easyChoices = {
             {"1) extends", "2) implements", "3) inherit", "4) override"},
             {"1) int", "2) float", "3) short", "4) long"},
-            {"1) :", "2) ;", "3) ,", "4) ()"},
-            {"1) try", "2) error", "3) catch", "4) finally"},
-            {"1) 상속", "2) 추상화", "3) 다형성", "4) 포인터"}
+            {"1) :", "2) ;", "3) ,", "4) ()"}
     };
-
-    private static int[] correctAnswers = {1, 2, 2, 1, 4}; // 정답 인덱스 (1부터 시작)
-    private static String[] explanations = {
+    private static int[] easyAnswers = {1, 2, 2};
+    private static String[] easyExplanations = {
             "Java에서는 상속을 할 때 'extends' 키워드를 사용해요.",
             "'float'는 실수형 자료형이고, 정수형이 아니에요.",
-            "';' 세미콜론은 for문의 각 부분을 구분하는 기호입니다.",
+            "';' 세미콜론은 for문의 각 부분을 구분하는 기호입니다."
+    };
+
+    // 보통 문제
+    private static String[] normalQuestions = {
+            "다음 중 Java에서 예외(Exception)를 처리하는 데 사용하는 키워드는?",
+            "객체 지향 프로그래밍(OOP)의 4가지 특징이 아닌 것은?",
+            "Java에서 인터페이스를 구현할 때 사용하는 키워드는?"
+    };
+    private static String[][] normalChoices = {
+            {"1) try", "2) error", "3) catch", "4) finally"},
+            {"1) 상속", "2) 추상화", "3) 다형성", "4) 포인터"},
+            {"1) implements", "2) extends", "3) inherits", "4) overrides"}
+    };
+    private static int[] normalAnswers = {1, 4, 1};
+    private static String[] normalExplanations = {
             "'try'는 예외를 처리하는 블록을 시작할 때 사용합니다.",
-            "'포인터'는 Java의 객체 지향 특징 중 하나가 아닙니다."
+            "'포인터'는 Java의 객체 지향 특징 중 하나가 아닙니다.",
+            "인터페이스는 'implements' 키워드로 구현합니다."
+    };
+
+    // 어려움 문제
+    private static String[] hardQuestions = {
+            "Java에서 제네릭(Generic)을 사용할 때 타입 매개변수를 지정하는 기호는?",
+            "다음 중 Java에서 쓰레드 생성을 위해 구현하는 인터페이스는?",
+            "Java의 가비지 컬렉션(Garbage Collection) 동작을 명시적으로 요청하는 메서드는?"
+    };
+    private static String[][] hardChoices = {
+            {"1) <>", "2) []", "3) {}", "4) ()"},
+            {"1) Runnable", "2) Serializable", "3) Comparable", "4) Cloneable"},
+            {"1) System.gc()", "2) Runtime.run()", "3) Garbage.collect()", "4) Memory.clean()"}
+    };
+    private static int[] hardAnswers = {1, 1, 1};
+    private static String[] hardExplanations = {
+            "제네릭 타입 매개변수는 꺾쇠괄호 '<>'를 사용해 지정합니다.",
+            "쓰레드 생성은 Runnable 인터페이스를 구현해서 합니다.",
+            "가비지 컬렉션은 System.gc() 메서드 호출로 명시적으로 요청할 수 있습니다."
     };
 
     public static void main(String[] args) {
@@ -45,7 +72,7 @@ public class Main {
         String subject = selectSubject();
         String difficulty = selectDifficulty();
 
-        int score = startQuiz(subject, difficulty);
+        int score = startQuiz(difficulty);
 
         showResult(score);
         showRanking();
@@ -63,7 +90,7 @@ public class Main {
 
         System.out.println("학년을 숫자로 입력하세요:");
         grade = scanner.nextInt();
-        scanner.nextLine(); // 버퍼 비우기
+        scanner.nextLine();
 
         System.out.println(nickname + "님, 로그인 완료!");
     }
@@ -71,7 +98,7 @@ public class Main {
     private static String selectQuizMode() {
         System.out.println("퀴즈 모드를 선택하세요: 1) 개인전  2) 팀전");
         int choice = scanner.nextInt();
-        scanner.nextLine(); // 버퍼 비우기
+        scanner.nextLine();
         return (choice == 1) ? "개인전" : "팀전";
     }
 
@@ -86,6 +113,7 @@ public class Main {
         System.out.println("난이도를 선택하세요: 1) 쉬움  2) 보통  3) 어려움");
         int choice = scanner.nextInt();
         scanner.nextLine();
+
         switch (choice) {
             case 1: return "쉬움";
             case 2: return "보통";
@@ -94,8 +122,39 @@ public class Main {
         }
     }
 
-    private static int startQuiz(String subject, String difficulty) {
-        System.out.println(subject + " (" + difficulty + ") 퀴즈를 시작합니다!");
+    private static int startQuiz(String difficulty) {
+        String[] questions;
+        String[][] choices;
+        int[] answers;
+        String[] explanations;
+
+        switch (difficulty) {
+            case "쉬움":
+                questions = easyQuestions;
+                choices = easyChoices;
+                answers = easyAnswers;
+                explanations = easyExplanations;
+                break;
+            case "보통":
+                questions = normalQuestions;
+                choices = normalChoices;
+                answers = normalAnswers;
+                explanations = normalExplanations;
+                break;
+            case "어려움":
+                questions = hardQuestions;
+                choices = hardChoices;
+                answers = hardAnswers;
+                explanations = hardExplanations;
+                break;
+            default:
+                questions = normalQuestions;
+                choices = normalChoices;
+                answers = normalAnswers;
+                explanations = normalExplanations;
+        }
+
+        System.out.println(difficulty + " 난이도 퀴즈를 시작합니다!");
 
         int score = 0;
 
@@ -129,14 +188,13 @@ public class Main {
 
             executor.shutdown();
 
-            if (answer == correctAnswers[i]) {
+            if (answer == answers[i]) {
                 System.out.println("✅ 정답!");
                 score += 10;
             } else if (answer != -1) {
-                System.out.println("❌ 오답! 정답은 " + correctAnswers[i] + "번입니다.");
+                System.out.println("❌ 오답! 정답은 " + answers[i] + "번입니다.");
                 System.out.println("💡 해설: " + explanations[i]);
             }
-            // answer == -1 (잘못된 입력 혹은 시간초과)일 때도 오답 처리된 상태라 추가 메시지 안함
         }
 
         return score;
